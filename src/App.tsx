@@ -14,9 +14,11 @@ import { Dashboard } from "@/pages/Dashboard";
 import { LeadsList } from "@/pages/LeadsList";
 import { NewLead } from "@/pages/NewLead";
 import { ApplicationsList } from "@/pages/ApplicationsList";
+import { ApplicationProcessing } from "@/pages/ApplicationProcessing";
 import { Underwriting } from "@/pages/Underwriting";
 import { Approvals } from "@/pages/Approvals";
 import { Analytics } from "@/pages/Analytics";
+import { Disbursal } from "@/pages/Disbursal";
 import { Unauthorized } from "@/pages/Unauthorized";
 import NotFound from "@/pages/NotFound";
 
@@ -54,6 +56,22 @@ const App = () => (
                 element={
                   <ProtectedRoute requiredRoles={['credit_officer', 'sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin']}>
                     <Underwriting />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/applications/:applicationId/process"
+                element={
+                  <ProtectedRoute requiredRoles={['credit_officer', 'sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin']}>
+                    <ApplicationProcessing />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/applications/:applicationId/disbursal"
+                element={
+                  <ProtectedRoute requiredRoles={['credit_officer', 'sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin']}>
+                    <Disbursal />
                   </ProtectedRoute>
                 }
               />
