@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Progress } from '@/components/ui/progress';
 import { 
   Select, 
   SelectContent, 
@@ -11,31 +10,24 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
 import { 
-  BarChart3, 
   TrendingUp, 
-  TrendingDown,
   Users,
-  FileText,
   CheckCircle2,
-  XCircle,
   Clock,
-  Download,
   Calendar,
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react';
+import { ExportButton } from '@/components/ui/export-button';
 import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
   ResponsiveContainer,
   LineChart,
   Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   PieChart,
   Pie,
   Cell
@@ -108,10 +100,19 @@ export function Analytics() {
               <SelectItem value="ytd">Year to date</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="gap-2">
-            <Download className="w-4 h-4" />
-            Export
-          </Button>
+          <ExportButton 
+            data={{
+              headers: ['Metric', 'Value', 'Change'],
+              rows: [
+                ['Total Leads', 156, '+12%'],
+                ['Disbursed', 68, '+8%'],
+                ['Avg TAT (days)', 2.4, '-0.3'],
+                ['Volume (Cr)', 2.8, '+15%'],
+              ]
+            }}
+            filename={`analytics-report-${dateRange}`}
+            label="Export"
+          />
         </div>
       </div>
 
