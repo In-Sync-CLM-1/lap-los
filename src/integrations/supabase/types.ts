@@ -253,6 +253,111 @@ export type Database = {
           },
         ]
       }
+      approval_matrix: {
+        Row: {
+          approval_level: number
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          max_amount: number
+          min_amount: number
+          product_type: Database["public"]["Enums"]["product_type"]
+          required_role: Database["public"]["Enums"]["app_role"]
+          updated_at: string | null
+        }
+        Insert: {
+          approval_level?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_amount: number
+          min_amount?: number
+          product_type: Database["public"]["Enums"]["product_type"]
+          required_role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+        }
+        Update: {
+          approval_level?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_amount?: number
+          min_amount?: number
+          product_type?: Database["public"]["Enums"]["product_type"]
+          required_role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      departments: {
+        Row: {
+          code: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      designations: {
+        Row: {
+          code: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          level: number
+          mapped_role: Database["public"]["Enums"]["app_role"]
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          level?: number
+          mapped_role: Database["public"]["Enums"]["app_role"]
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          level?: number
+          mapped_role?: Database["public"]["Enums"]["app_role"]
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       documents: {
         Row: {
           api_validation_result: Json | null
@@ -510,6 +615,8 @@ export type Database = {
           avatar_url: string | null
           branch_code: string | null
           created_at: string
+          department_id: string | null
+          designation_id: string | null
           employee_id: string | null
           full_name: string
           id: string
@@ -524,6 +631,8 @@ export type Database = {
           avatar_url?: string | null
           branch_code?: string | null
           created_at?: string
+          department_id?: string | null
+          designation_id?: string | null
           employee_id?: string | null
           full_name: string
           id?: string
@@ -538,6 +647,8 @@ export type Database = {
           avatar_url?: string | null
           branch_code?: string | null
           created_at?: string
+          department_id?: string | null
+          designation_id?: string | null
           employee_id?: string | null
           full_name?: string
           id?: string
@@ -548,7 +659,22 @@ export type Database = {
           user_id?: string
           zone?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_designation_id_fkey"
+            columns: ["designation_id"]
+            isOneToOne: false
+            referencedRelation: "designations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -617,6 +743,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_required_approvers: {
+        Args: {
+          _amount: number
+          _product_type: Database["public"]["Enums"]["product_type"]
+        }
+        Returns: {
+          approval_level: number
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]

@@ -21,6 +21,7 @@ import { Approvals } from "@/pages/Approvals";
 import { Analytics } from "@/pages/Analytics";
 import { Disbursal } from "@/pages/Disbursal";
 import { Settings } from "@/pages/Settings";
+import { UserManagement } from "@/pages/UserManagement";
 import { Unauthorized } from "@/pages/Unauthorized";
 import NotFound from "@/pages/NotFound";
 
@@ -94,6 +95,16 @@ const App = () => (
                 element={
                   <ProtectedRoute requiredRoles={['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin']}>
                     <Analytics />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Admin Only Routes */}
+              <Route
+                path="/admin/users"
+                element={
+                  <ProtectedRoute requiredRoles={['admin']}>
+                    <UserManagement />
                   </ProtectedRoute>
                 }
               />
