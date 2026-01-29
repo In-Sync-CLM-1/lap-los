@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,10 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { 
   Building2, 
   LayoutDashboard, 
@@ -28,13 +30,20 @@ import {
   ClipboardList,
   UserCheck,
   TrendingUp,
-  UserCog
+  UserCog,
+  Link2,
+  Copy,
+  ExternalLink,
+  Check
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ROLE_LABELS } from '@/types/database';
 import { NetworkStatus } from './NetworkStatus';
 import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
+import { generateReferralUrl } from '@/lib/referral-utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface NavItem {
   label: string;
@@ -56,9 +65,40 @@ const navItems: NavItem[] = [
 
 export function AppLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { profile, primaryRole, signOut, hasRole, isManager } = useAuth();
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const { user, profile, primaryRole, signOut, hasRole, isManager } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Fetch referral code
+  useEffect(() => {
+    const fetchReferralCode = async () => {
+      if (!user?.id) return;
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('referral_code')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (data?.referral_code) {
+        setReferralCode(data.referral_code);
+      }
+    };
+
+    fetchReferralCode();
+  }, [user?.id]);
+
+  const referralUrl = referralCode ? generateReferralUrl(referralCode) : '';
+
+  const handleCopyLink = async () => {
+    if (!referralUrl) return;
+    await navigator.clipboard.writeText(referralUrl);
+    setCopied(true);
+    toast.success('Link copied to clipboard!');
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -145,6 +185,57 @@ export function AppLayout() {
               </p>
             </div>
           </div>
+          
+          {/* Referral Link Button */}
+          {referralCode && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="sm" className="w-full mt-3 gap-2 text-sidebar-foreground hover:bg-sidebar-accent">
+                  <Link2 className="w-4 h-4" />
+                  My Referral Link
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" side="top" align="start">
+                <div className="space-y-3">
+                  <h4 className="font-medium text-sm">Share Your Referral Link</h4>
+                  <div className="flex gap-2">
+                    <Input 
+                      value={referralUrl} 
+                      readOnly 
+                      className="text-xs h-9"
+                    />
+                    <Button 
+                      size="icon" 
+                      variant="outline"
+                      className="h-9 w-9 shrink-0"
+                      onClick={handleCopyLink}
+                    >
+                      {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-1"
+                      onClick={() => window.open(referralUrl, '_blank')}
+                    >
+                      <ExternalLink className="w-3 h-3" />
+                      Open
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="gap-1"
+                      onClick={() => navigate('/settings')}
+                    >
+                      View QR Code
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
       </aside>
 
