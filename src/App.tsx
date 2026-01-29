@@ -25,6 +25,7 @@ import { Settings } from "@/pages/Settings";
 import { UserManagement } from "@/pages/UserManagement";
 import { Unauthorized } from "@/pages/Unauthorized";
 import NotFound from "@/pages/NotFound";
+import { ReferralApplication } from "@/pages/ReferralApplication";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => (
               {/* Public Routes */}
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/apply/:referralCode" element={<ReferralApplication />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               
             {/* Protected Routes with Layout */}
