@@ -30,6 +30,7 @@ import { format } from 'date-fns';
 import type { Lead, LeadStatus, ProductType } from '@/types/database';
 import { LEAD_STATUS_LABELS, PRODUCT_LABELS } from '@/types/database';
 import { useLeadConversion } from '@/hooks/useLeadConversion';
+import { LeadScoreBadge } from '@/components/leads/LeadScoreCard';
 
 function getStatusVariant(status: LeadStatus): string {
   switch (status) {
@@ -73,7 +74,8 @@ export function LeadsList() {
 
       const { data, error } = await query;
       if (error) throw error;
-      return (data || []) as Lead[];
+      // Cast to our Lead type - the database may have additional fields
+      return (data || []) as unknown as Lead[];
     },
   });
 
@@ -208,17 +210,18 @@ export function LeadsList() {
             <Link key={lead.id} to={`/leads/${lead.id}`}>
               <Card className="card-hover cursor-pointer">
                 <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold truncate">{lead.customer_name}</h3>
-                        <Badge variant="outline" className={getStatusVariant(lead.status)}>
-                          {LEAD_STATUS_LABELS[lead.status]}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-2">
-                        {lead.lead_number} • {PRODUCT_LABELS[lead.product_type]}
-                      </p>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-semibold truncate">{lead.customer_name}</h3>
+                          <Badge variant="outline" className={getStatusVariant(lead.status)}>
+                            {LEAD_STATUS_LABELS[lead.status]}
+                          </Badge>
+                          <LeadScoreBadge score={lead.lead_score} temperature={lead.lead_temperature} />
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          {lead.lead_number} • {PRODUCT_LABELS[lead.product_type]}
+                        </p>
                       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Phone className="w-3.5 h-3.5" />

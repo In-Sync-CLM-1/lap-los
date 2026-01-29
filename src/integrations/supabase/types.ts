@@ -470,17 +470,24 @@ export type Database = {
           id: string
           is_dedupe_clean: boolean | null
           lead_number: string
+          lead_score: number | null
+          lead_temperature: string | null
+          next_followup_at: string | null
           partner_code: string | null
           product_type: Database["public"]["Enums"]["product_type"]
           property_address: string | null
           property_type: string | null
           property_value: number | null
           purpose_of_loan: string | null
+          qualification_status: string | null
           requested_amount: number
           requested_tenure_months: number | null
+          residence_status: string | null
           ro_id: string
+          scoring_factors: Json | null
           source_channel: string | null
           status: Database["public"]["Enums"]["lead_status"]
+          tech_source_reference: string | null
           udyam_number: string | null
           updated_at: string
         }
@@ -511,17 +518,24 @@ export type Database = {
           id?: string
           is_dedupe_clean?: boolean | null
           lead_number: string
+          lead_score?: number | null
+          lead_temperature?: string | null
+          next_followup_at?: string | null
           partner_code?: string | null
           product_type: Database["public"]["Enums"]["product_type"]
           property_address?: string | null
           property_type?: string | null
           property_value?: number | null
           purpose_of_loan?: string | null
+          qualification_status?: string | null
           requested_amount: number
           requested_tenure_months?: number | null
+          residence_status?: string | null
           ro_id: string
+          scoring_factors?: Json | null
           source_channel?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          tech_source_reference?: string | null
           udyam_number?: string | null
           updated_at?: string
         }
@@ -552,17 +566,24 @@ export type Database = {
           id?: string
           is_dedupe_clean?: boolean | null
           lead_number?: string
+          lead_score?: number | null
+          lead_temperature?: string | null
+          next_followup_at?: string | null
           partner_code?: string | null
           product_type?: Database["public"]["Enums"]["product_type"]
           property_address?: string | null
           property_type?: string | null
           property_value?: number | null
           purpose_of_loan?: string | null
+          qualification_status?: string | null
           requested_amount?: number
           requested_tenure_months?: number | null
+          residence_status?: string | null
           ro_id?: string
+          scoring_factors?: Json | null
           source_channel?: string | null
           status?: Database["public"]["Enums"]["lead_status"]
+          tech_source_reference?: string | null
           udyam_number?: string | null
           updated_at?: string
         }

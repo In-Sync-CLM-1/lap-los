@@ -36,6 +36,11 @@ export interface UserRole {
   created_at: string;
 }
 
+export type LeadTemperature = 'hot' | 'warm' | 'cold';
+export type QualificationStatus = 'raw' | 'scored' | 'qualified' | 'los_ready';
+export type ResidenceStatus = 'owned' | 'rented' | 'family_owned' | 'company_provided';
+export type SourceChannel = 'physical' | 'partnership' | 'whatsapp' | 'website';
+
 export interface Lead {
   id: string;
   lead_number: string;
@@ -49,6 +54,7 @@ export interface Lead {
   customer_aadhaar: string | null;
   date_of_birth: string | null;
   gender: string | null;
+  residence_status: ResidenceStatus | null;
   
   // Co-applicant Details
   co_applicant_name: string | null;
@@ -78,8 +84,9 @@ export interface Lead {
   purpose_of_loan: string | null;
   
   // Lead Source
-  source_channel: string;
+  source_channel: SourceChannel;
   partner_code: string | null;
+  tech_source_reference: string | null;
   
   // Location Data
   capture_latitude: number | null;
@@ -90,6 +97,13 @@ export interface Lead {
   status: LeadStatus;
   is_dedupe_clean: boolean | null;
   dedupe_checked_at: string | null;
+  
+  // Lead Scoring & Nurturing
+  lead_score: number | null;
+  lead_temperature: LeadTemperature | null;
+  qualification_status: QualificationStatus | null;
+  scoring_factors: Record<string, unknown> | null;
+  next_followup_at: string | null;
   
   // Timestamps
   created_at: string;
