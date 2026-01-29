@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOnboarding } from '@/contexts/OnboardingContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,12 +8,32 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Database, User, Shield, RotateCcw, Sparkles } from 'lucide-react';
 import { ROLE_LABELS } from '@/types/database';
+import { ReferralQRCard } from '@/components/referral/ReferralQRCard';
 
 export function Settings() {
-  const { profile, primaryRole, isManager } = useAuth();
+  const { profile, primaryRole, isManager, user } = useAuth();
   const { restartTour } = useOnboarding();
   const { toast } = useToast();
   const [isSeeding, setIsSeeding] = useState(false);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchReferralCode() {
+      if (!user?.id) return;
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('referral_code')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (data?.referral_code) {
+        setReferralCode(data.referral_code);
+      }
+    }
+    
+    fetchReferralCode();
+  }, [user?.id]);
 
   const handleSeedData = async () => {
     setIsSeeding(true);
@@ -44,6 +64,9 @@ export function Settings() {
           <div className="flex justify-between"><span className="text-muted-foreground">Role</span><Badge>{primaryRole ? ROLE_LABELS[primaryRole] : 'No role'}</Badge></div>
         </CardContent>
       </Card>
+
+      {/* Referral QR Card */}
+      <ReferralQRCard referralCode={referralCode} userName={profile?.full_name} />
 
       {/* Onboarding Tour */}
       <Card>

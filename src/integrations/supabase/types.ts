@@ -645,6 +645,7 @@ export type Database = {
           onboarding_completed: boolean | null
           onboarding_completed_at: string | null
           phone: string | null
+          referral_code: string | null
           region: string | null
           updated_at: string
           user_id: string
@@ -663,6 +664,7 @@ export type Database = {
           onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
           phone?: string | null
+          referral_code?: string | null
           region?: string | null
           updated_at?: string
           user_id: string
@@ -681,6 +683,7 @@ export type Database = {
           onboarding_completed?: boolean | null
           onboarding_completed_at?: string | null
           phone?: string | null
+          referral_code?: string | null
           region?: string | null
           updated_at?: string
           user_id?: string
