@@ -3,9 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { notifyApplicationEvent } from '@/lib/notification-hooks';
-import type { Tables } from '@/integrations/supabase/types';
-
-type Lead = Tables<'leads'>;
+import type { Lead } from '@/types/database';
 
 interface ConversionResult {
   success: boolean;

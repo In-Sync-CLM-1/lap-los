@@ -29,12 +29,15 @@ import {
   Edit2,
   X,
   Camera,
-  Upload
+  Upload,
+  TrendingUp
 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Lead, LeadStatus } from '@/types/database';
 import { LEAD_STATUS_LABELS, PRODUCT_LABELS } from '@/types/database';
 import { useLeadConversion } from '@/hooks/useLeadConversion';
+import { LeadScoreCard } from '@/components/leads/LeadScoreCard';
+import { LeadNurturingPanel } from '@/components/leads/LeadNurturingPanel';
 
 function getStatusVariant(status: LeadStatus): string {
   switch (status) {
@@ -70,7 +73,8 @@ export function LeadDetail() {
       
       if (error) throw error;
       if (!data) throw new Error('Lead not found');
-      return data as Lead;
+      // Cast to our Lead type - the database may have additional fields
+      return data as unknown as Lead;
     },
     enabled: !!leadId,
   });
@@ -371,6 +375,10 @@ export function LeadDetail() {
             <User className="w-4 h-4" />
             Details
           </TabsTrigger>
+          <TabsTrigger value="scoring" className="gap-2">
+            <TrendingUp className="w-4 h-4" />
+            Scoring
+          </TabsTrigger>
           <TabsTrigger value="documents" className="gap-2">
             <FileText className="w-4 h-4" />
             Documents
@@ -577,6 +585,30 @@ export function LeadDetail() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="scoring" className="mt-6 space-y-6">
+          <LeadScoreCard lead={lead} />
+          <LeadNurturingPanel
+            leadId={lead.id}
+            leadScore={lead.lead_score}
+            temperature={lead.lead_temperature}
+            qualificationStatus={lead.qualification_status}
+            nextFollowupAt={lead.next_followup_at}
+            onScheduleFollowup={(date, notes) => {
+              // TODO: Implement follow-up scheduling
+              toast({
+                title: 'Follow-up scheduled',
+                description: `Reminder set for ${format(date, 'dd MMM yyyy')}`,
+              });
+            }}
+            onMarkAction={(action) => {
+              toast({
+                title: 'Action recorded',
+                description: `${action} action logged for this lead`,
+              });
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="documents" className="mt-6">

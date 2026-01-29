@@ -30,8 +30,10 @@ import {
   Send,
   WifiOff
 } from 'lucide-react';
-import type { ProductType } from '@/types/database';
+import type { ProductType, SourceChannel, ResidenceStatus } from '@/types/database';
 import { PRODUCT_LABELS } from '@/types/database';
+import { ChannelSelector } from '@/components/leads/ChannelSelector';
+import { OCRDocumentCapture } from '@/components/leads/OCRDocumentCapture';
 
 export function NewLead() {
   const navigate = useNavigate();
@@ -40,6 +42,11 @@ export function NewLead() {
   const { isOnline, queueAction } = useOfflineSync();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('customer');
+  
+  // Channel selection state
+  const [sourceChannel, setSourceChannel] = useState<SourceChannel>('physical');
+  const [partnerCode, setPartnerCode] = useState('');
+  const [techReference, setTechReference] = useState('');
   
   // Form state
   const [formData, setFormData] = useState({
@@ -51,6 +58,7 @@ export function NewLead() {
     customer_aadhaar: '',
     gender: '',
     date_of_birth: '',
+    residence_status: '' as ResidenceStatus | '',
     
     // Co-applicant
     has_co_applicant: false,
@@ -85,6 +93,31 @@ export function NewLead() {
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleOCRDataExtracted = (documentType: 'aadhaar' | 'pan', data: {
+    name?: string;
+    number: string;
+    dateOfBirth?: string;
+    address?: string;
+    gender?: string;
+  }) => {
+    if (documentType === 'pan') {
+      setFormData(prev => ({
+        ...prev,
+        customer_pan: data.number,
+        customer_name: prev.customer_name || data.name || '',
+        date_of_birth: prev.date_of_birth || data.dateOfBirth || '',
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        customer_aadhaar: data.number.replace(/\s/g, ''),
+        customer_name: prev.customer_name || data.name || '',
+        date_of_birth: prev.date_of_birth || data.dateOfBirth || '',
+        gender: prev.gender || (data.gender?.toLowerCase() || ''),
+      }));
+    }
   };
 
   const getLocation = async () => {
@@ -130,6 +163,16 @@ export function NewLead() {
       return;
     }
 
+    // Partnership validation
+    if (sourceChannel === 'partnership' && !partnerCode) {
+      toast({
+        title: 'Validation Error',
+        description: 'Partner code is required for partnership leads',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (!user) {
       toast({
         title: 'Authentication Error',
@@ -151,6 +194,7 @@ export function NewLead() {
       customer_aadhaar: formData.customer_aadhaar || null,
       gender: formData.gender || null,
       date_of_birth: formData.date_of_birth || null,
+      residence_status: formData.residence_status || null,
       co_applicant_name: formData.has_co_applicant ? formData.co_applicant_name || null : null,
       co_applicant_phone: formData.has_co_applicant ? formData.co_applicant_phone || null : null,
       co_applicant_pan: formData.has_co_applicant ? formData.co_applicant_pan || null : null,
@@ -173,7 +217,9 @@ export function NewLead() {
       capture_longitude: location?.lng || null,
       capture_address: location?.address || null,
       status: asDraft ? 'new' : 'submitted',
-      source_channel: 'physical',
+      source_channel: sourceChannel,
+      partner_code: sourceChannel === 'partnership' ? partnerCode : null,
+      tech_source_reference: (sourceChannel === 'whatsapp' || sourceChannel === 'website') ? techReference : null,
     };
 
     try {
@@ -233,34 +279,46 @@ export function NewLead() {
         )}
       </div>
 
-      {/* Location Bar */}
-      <Card>
-        <CardContent className="py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-muted-foreground" />
-            {location ? (
-              <span className="text-sm">{location.address}</span>
-            ) : (
-              <span className="text-sm text-muted-foreground">Location not captured</span>
-            )}
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={getLocation}
-            disabled={isGettingLocation}
-          >
-            {isGettingLocation ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <>
-                <MapPin className="w-4 h-4 mr-2" />
-                {location ? 'Update' : 'Capture Location'}
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
+      {/* Channel Selector */}
+      <ChannelSelector
+        value={sourceChannel}
+        onChange={setSourceChannel}
+        partnerCode={partnerCode}
+        onPartnerCodeChange={setPartnerCode}
+        techReference={techReference}
+        onTechReferenceChange={setTechReference}
+      />
+
+      {/* Location Bar - Only for Physical mode */}
+      {sourceChannel === 'physical' && (
+        <Card>
+          <CardContent className="py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-muted-foreground" />
+              {location ? (
+                <span className="text-sm">{location.address}</span>
+              ) : (
+                <span className="text-sm text-muted-foreground">Location not captured</span>
+              )}
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={getLocation}
+              disabled={isGettingLocation}
+            >
+              {isGettingLocation ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <MapPin className="w-4 h-4 mr-2" />
+                  {location ? 'Update' : 'Capture Location'}
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Form Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -336,23 +394,68 @@ export function NewLead() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="customer_pan">PAN Number</Label>
+                  <Label htmlFor="date_of_birth">Date of Birth</Label>
                   <Input
-                    id="customer_pan"
-                    placeholder="ABCDE1234F"
-                    value={formData.customer_pan}
-                    onChange={(e) => handleInputChange('customer_pan', e.target.value.toUpperCase())}
-                    maxLength={10}
+                    id="date_of_birth"
+                    type="date"
+                    value={formData.date_of_birth}
+                    onChange={(e) => handleInputChange('date_of_birth', e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="customer_aadhaar">Aadhaar Number</Label>
-                  <Input
-                    id="customer_aadhaar"
-                    placeholder="1234 5678 9012"
-                    value={formData.customer_aadhaar}
-                    onChange={(e) => handleInputChange('customer_aadhaar', e.target.value)}
-                  />
+                  <Label htmlFor="residence_status">Residence Status</Label>
+                  <Select 
+                    value={formData.residence_status} 
+                    onValueChange={(v) => handleInputChange('residence_status', v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="owned">Owned</SelectItem>
+                      <SelectItem value="rented">Rented</SelectItem>
+                      <SelectItem value="family_owned">Family-owned</SelectItem>
+                      <SelectItem value="company_provided">Company Provided</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* KYC Section with OCR */}
+              <div className="border-t pt-4 mt-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-sm font-medium">KYC Documents</h4>
+                  <div className="flex gap-2">
+                    <OCRDocumentCapture
+                      documentType="pan"
+                      onDataExtracted={(data) => handleOCRDataExtracted('pan', data)}
+                    />
+                    <OCRDocumentCapture
+                      documentType="aadhaar"
+                      onDataExtracted={(data) => handleOCRDataExtracted('aadhaar', data)}
+                    />
+                  </div>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="customer_pan">PAN Number</Label>
+                    <Input
+                      id="customer_pan"
+                      placeholder="ABCDE1234F"
+                      value={formData.customer_pan}
+                      onChange={(e) => handleInputChange('customer_pan', e.target.value.toUpperCase())}
+                      maxLength={10}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="customer_aadhaar">Aadhaar Number</Label>
+                    <Input
+                      id="customer_aadhaar"
+                      placeholder="1234 5678 9012"
+                      value={formData.customer_aadhaar}
+                      onChange={(e) => handleInputChange('customer_aadhaar', e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
 
