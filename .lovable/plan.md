@@ -1,153 +1,358 @@
 
 
-# Add Referral Link to Sidebar Profile Section
+# Reports Section with Downloadable CSV Reports
 
 ## Overview
 
-Currently, the referral link and QR code are only accessible on the Settings page. You want a quick-access link directly in the sidebar profile section (where the email and "Administrator" role are displayed) so users can easily copy/share their referral link without navigating away from their current page.
+This plan adds a dedicated **Reports** section to the LOS with comprehensive downloadable reports in CSV format. The reports will include Application Number, Loan ID, and Client ID fields, grouped appropriately across different report types for MIS and audit purposes.
 
 ---
 
-## Current State
+## Report Types
 
-The sidebar profile section (in `AppLayout.tsx`) currently shows:
-- User avatar
-- User email/name
-- Role badge
+### 1. Lead Report
+All leads with customer and scoring information
 
-The referral code is only accessible by going to **Settings → Referral QR Card**.
+| Column | Description |
+|--------|-------------|
+| Lead Number (Lead ID) | NC-L-YYYYMMDD-XXXXX |
+| Client Name | Customer name |
+| Phone | Contact number |
+| Email | Email address |
+| Product Type | Business Loan, Personal Loan, etc. |
+| Requested Amount | Loan amount requested |
+| Lead Score | 0-100 score |
+| Temperature | Hot/Warm/Cold |
+| Qualification Status | Raw/Scored/Qualified/LOS Ready |
+| Source Channel | Physical/Partnership/WhatsApp/Website |
+| Status | Lead status |
+| RO Name | Assigned relationship officer |
+| Created Date | Lead creation date |
 
----
+### 2. Application Report
+All applications with processing details
 
-## Proposed Solution
+| Column | Description |
+|--------|-------------|
+| Application Number | NC-A-YYYYMMDD-XXXXX |
+| Lead Number | Linked lead ID |
+| Client Name | Customer name |
+| Product Type | Loan type |
+| Requested Amount | Original request |
+| Final Amount | Sanctioned amount |
+| BRE Score | Business rule engine score |
+| BRE Decision | STP/Non-STP/Rejected |
+| Status | Current application status |
+| Interest Rate | Final rate % |
+| Tenure | Months |
+| EMI | Monthly installment |
+| RO Name | Relationship officer |
+| Underwriter Name | Assigned underwriter |
+| Created Date | Application date |
+| Approved Date | Approval date |
 
-Add a clickable referral link button/icon directly in the sidebar profile area that:
-1. Shows a **Share/QR icon** next to user info
-2. Opens a **popover or dialog** with the referral link and quick copy option
-3. Includes a link to full Settings page for QR code download
+### 3. Disbursal Report
+Disbursed loans with bank details
+
+| Column | Description |
+|--------|-------------|
+| Application Number | Loan ID reference |
+| Lead Number | Lead reference |
+| Client Name | Borrower name |
+| Product Type | Loan type |
+| Sanctioned Amount | Approved amount |
+| Disbursed Amount | Amount disbursed |
+| Bank Name | Beneficiary bank |
+| Account Number | Bank account |
+| IFSC Code | Bank branch code |
+| Disbursed Date | Disbursal date |
+| RO Name | Sourcing officer |
+
+### 4. Rejection Analysis Report
+Rejected applications with reasons
+
+| Column | Description |
+|--------|-------------|
+| Application Number | Application ID |
+| Lead Number | Lead reference |
+| Client Name | Applicant name |
+| Product Type | Loan type |
+| Requested Amount | Original request |
+| BRE Score | Score at rejection |
+| Rejection Reason | Reason for rejection |
+| Rejected By | Rejecting officer |
+| Rejected Date | Date of rejection |
+
+### 5. Pipeline Report
+Active applications in progress
+
+| Column | Description |
+|--------|-------------|
+| Application Number | Application ID |
+| Lead Number | Lead reference |
+| Client Name | Applicant name |
+| Product Type | Loan type |
+| Amount | Loan amount |
+| Status | Current stage |
+| Days in Stage | TAT tracking |
+| Current Assignee | Who owns it now |
+| Created Date | When created |
 
 ---
 
 ## UI Design
 
 ```text
-Sidebar Profile Section (Enhanced)
-+--------------------------------------------+
-|  [Avatar]  a@in-sync.co.in                 |
-|            Administrator                    |
-|            [🔗 My Referral Link]           |
-+--------------------------------------------+
-
-When clicked, shows popover:
-+--------------------------------------------+
-|  Share your referral link                  |
-|                                            |
-|  [https://niyara.lovable.app/apply/NC-XX] |
-|                                            |
-|  [Copy Link] [Open] [View QR in Settings] |
-+--------------------------------------------+
+Reports Page
++------------------------------------------------------------------+
+|  📊 Reports & MIS                                                |
+|  Download comprehensive reports for analysis and audit           |
++------------------------------------------------------------------+
+|                                                                  |
+|  Date Range: [From: ___] [To: ___]   [Apply Filters]            |
+|                                                                  |
++------------------------------------------------------------------+
+|                                                                  |
+|  ┌─────────────────────────────────────────────────────────┐    |
+|  │  📋 Lead Report                                          │    |
+|  │  All leads with customer details and scoring             │    |
+|  │                                                          │    |
+|  │  Records: 1,234  |  Last Updated: Just now               │    |
+|  │                                                          │    |
+|  │  [Download CSV]  [Download Excel]                        │    |
+|  └─────────────────────────────────────────────────────────┘    |
+|                                                                  |
+|  ┌─────────────────────────────────────────────────────────┐    |
+|  │  📄 Application Report                                   │    |
+|  │  All applications with BRE results and offer details     │    |
+|  │                                                          │    |
+|  │  Records: 456  |  Last Updated: Just now                 │    |
+|  │                                                          │    |
+|  │  [Download CSV]  [Download Excel]                        │    |
+|  └─────────────────────────────────────────────────────────┘    |
+|                                                                  |
+|  ┌─────────────────────────────────────────────────────────┐    |
+|  │  💰 Disbursal Report                                     │    |
+|  │  Disbursed loans with bank and amount details            │    |
+|  │                                                          │    |
+|  │  Records: 123  |  Total: ₹45.6 Cr                        │    |
+|  │                                                          │    |
+|  │  [Download CSV]  [Download Excel]                        │    |
+|  └─────────────────────────────────────────────────────────┘    |
+|                                                                  |
+|  ┌─────────────────────────────────────────────────────────┐    |
+|  │  ❌ Rejection Analysis                                   │    |
+|  │  Rejected applications with reasons                      │    |
+|  │                                                          │    |
+|  │  Records: 89  |  Rejection Rate: 12.3%                   │    |
+|  │                                                          │    |
+|  │  [Download CSV]  [Download Excel]                        │    |
+|  └─────────────────────────────────────────────────────────┘    |
+|                                                                  |
+|  ┌─────────────────────────────────────────────────────────┐    |
+|  │  🔄 Pipeline Report                                      │    |
+|  │  Active applications with TAT tracking                   │    |
+|  │                                                          │    |
+|  │  Records: 78  |  Avg TAT: 2.4 days                       │    |
+|  │                                                          │    |
+|  │  [Download CSV]  [Download Excel]                        │    |
+|  └─────────────────────────────────────────────────────────┘    |
+|                                                                  |
++------------------------------------------------------------------+
 ```
 
 ---
 
-## Implementation Changes
+## Files to Create
 
-### File: `src/components/layout/AppLayout.tsx`
+| File | Purpose |
+|------|---------|
+| `src/pages/Reports.tsx` | Main reports page with all report cards |
+| `src/components/reports/ReportCard.tsx` | Reusable report card component |
+| `src/lib/report-generators.ts` | Functions to format data for each report type |
 
-1. **Add state and effect** to fetch referral code (similar to Settings page)
-2. **Add referral link button** in the sidebar profile section
-3. **Add Popover component** for quick access to copy/share
+## Files to Modify
 
-### Key Changes:
+| File | Changes |
+|------|---------|
+| `src/App.tsx` | Add `/reports` route (management access) |
+| `src/components/layout/AppLayout.tsx` | Add "Reports" to navigation |
+| `src/lib/export-utils.ts` | Add new export formatters if needed |
 
-```text
-// Add imports
-- useState, useEffect
-- Popover, PopoverTrigger, PopoverContent
-- Link2, Copy, ExternalLink icons
-- generateReferralUrl from referral-utils
+---
 
-// Add state
-const [referralCode, setReferralCode] = useState<string | null>(null);
+## Technical Implementation
 
-// Add useEffect to fetch referral code
-useEffect(() => {
-  // Fetch referral_code from profiles table
-}, [user?.id]);
+### Report Data Fetching
 
-// Add to profile section (lines 131-148)
-<Button variant="ghost" size="sm" className="gap-1">
-  <Link2 className="w-4 h-4" />
-  My Referral Link
-</Button>
+Each report will fetch data from Supabase with appropriate joins:
+
+```typescript
+// Lead Report - joins profiles for RO name
+const leadsQuery = supabase
+  .from('leads')
+  .select(`
+    lead_number,
+    customer_name,
+    customer_phone,
+    customer_email,
+    product_type,
+    requested_amount,
+    lead_score,
+    lead_temperature,
+    qualification_status,
+    source_channel,
+    status,
+    created_at,
+    profiles!ro_id(full_name)
+  `)
+  .gte('created_at', dateFrom)
+  .lte('created_at', dateTo);
+
+// Application Report - joins leads and profiles
+const applicationsQuery = supabase
+  .from('applications')
+  .select(`
+    application_number,
+    status,
+    bre_score,
+    bre_decision,
+    final_amount,
+    final_interest_rate,
+    final_tenure_months,
+    final_emi,
+    created_at,
+    approved_at,
+    leads!inner(
+      lead_number,
+      customer_name,
+      product_type,
+      requested_amount
+    ),
+    ro:profiles!ro_id(full_name),
+    underwriter:profiles!assigned_underwriter_id(full_name)
+  `)
+  .gte('created_at', dateFrom)
+  .lte('created_at', dateTo);
+```
+
+### ID Grouping Strategy
+
+Reports will include these ID fields for proper grouping:
+
+1. **Lead Number** (Client ID): `NC-L-YYYYMMDD-XXXXX` - Primary identifier for the customer lead
+2. **Application Number** (Loan ID): `NC-A-YYYYMMDD-XXXXX` - Unique loan application reference
+3. **Client Name**: For human-readable identification
+
+This allows:
+- Grouping all applications by Lead Number to see customer history
+- Tracking loan lifecycle by Application Number
+- Cross-referencing between leads and applications
+
+---
+
+## Navigation Addition
+
+Add to `navItems` array in AppLayout.tsx:
+
+```typescript
+{ 
+  label: 'Reports', 
+  href: '/reports', 
+  icon: FileBarChart2, // or Download icon
+  roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'],
+  tourId: 'nav-reports'
+},
+```
+
+Position: Between "Analytics" and "User Management"
+
+---
+
+## Date Filter Logic
+
+```typescript
+const [dateFrom, setDateFrom] = useState<Date>(subDays(new Date(), 30));
+const [dateTo, setDateTo] = useState<Date>(new Date());
+
+// Quick presets
+const presets = [
+  { label: 'Last 7 days', value: '7d' },
+  { label: 'Last 30 days', value: '30d' },
+  { label: 'Last 90 days', value: '90d' },
+  { label: 'This Month', value: 'mtd' },
+  { label: 'This Quarter', value: 'qtd' },
+  { label: 'This Year', value: 'ytd' },
+];
 ```
 
 ---
 
-## Component Structure
+## Export Function Enhancement
 
-### Sidebar Profile Section Enhancement
+Add to `src/lib/report-generators.ts`:
 
-```tsx
-{/* User Profile with Referral Link */}
-<div className="border-t border-sidebar-border p-4">
-  <div className="flex items-center gap-3">
-    <Avatar>...</Avatar>
-    <div className="flex-1 min-w-0">
-      <p className="text-sm font-medium">{profile?.full_name}</p>
-      <p className="text-xs text-muted">{ROLE_LABELS[primaryRole]}</p>
-    </div>
-  </div>
-  
-  {/* NEW: Referral Link Button */}
-  {referralCode && (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="w-full mt-2 gap-2">
-          <Link2 className="w-4 h-4" />
-          My Referral Link
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80">
-        <div className="space-y-3">
-          <h4 className="font-medium">Share Your Referral Link</h4>
-          <div className="flex gap-2">
-            <Input value={referralUrl} readOnly className="text-xs" />
-            <Button size="icon" onClick={handleCopyLink}>
-              <Copy className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={openLink}>
-              <ExternalLink /> Open
-            </Button>
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/settings">View QR Code</Link>
-            </Button>
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
-  )}
-</div>
+```typescript
+export function formatLeadReport(leads: LeadWithProfile[]): ExportData {
+  return {
+    headers: [
+      'Lead Number',
+      'Client Name',
+      'Phone',
+      'Email',
+      'Product Type',
+      'Requested Amount',
+      'Lead Score',
+      'Temperature',
+      'Qualification',
+      'Source Channel',
+      'Status',
+      'RO Name',
+      'Created Date'
+    ],
+    rows: leads.map(lead => [
+      lead.lead_number,
+      lead.customer_name,
+      lead.customer_phone,
+      lead.customer_email || '',
+      PRODUCT_LABELS[lead.product_type],
+      lead.requested_amount,
+      lead.lead_score || 0,
+      lead.lead_temperature || 'N/A',
+      lead.qualification_status || 'raw',
+      lead.source_channel,
+      LEAD_STATUS_LABELS[lead.status],
+      lead.profiles?.full_name || 'Unknown',
+      format(new Date(lead.created_at), 'dd-MMM-yyyy')
+    ])
+  };
+}
+
+// Similar functions for other report types
 ```
 
 ---
 
-## Summary of Changes
+## Access Control
 
-| File | Change |
-|------|--------|
-| `src/components/layout/AppLayout.tsx` | Add referral link popover button to sidebar profile section |
+Reports are accessible to management roles only:
+- Sales Manager
+- Regional Head
+- Zonal Head
+- CEO
+- Admin
 
-**No new files needed** - only enhancing the existing sidebar component.
+ROs and Credit Officers do not have access to the full reports section (they can export from their respective list views).
 
 ---
 
-## Technical Notes
+## Summary
 
-- Uses existing `generateReferralUrl()` from `src/lib/referral-utils.ts`
-- Fetches `referral_code` from the `profiles` table using existing Supabase client
-- Popover provides quick copy without leaving current page
-- Links to Settings page for full QR code and download options
+| Item | Details |
+|------|---------|
+| New Files | 3 (Reports.tsx, ReportCard.tsx, report-generators.ts) |
+| Modified Files | 2 (App.tsx, AppLayout.tsx) |
+| Report Types | 5 (Lead, Application, Disbursal, Rejection, Pipeline) |
+| Access | Management roles only |
+| Features | Date filtering, CSV/Excel export, record counts |
 
