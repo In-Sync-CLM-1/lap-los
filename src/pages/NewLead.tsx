@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,11 +24,11 @@ import {
   Briefcase, 
   Home, 
   CreditCard,
-  Camera,
   MapPin,
   Loader2,
   Save,
-  Send
+  Send,
+  WifiOff
 } from 'lucide-react';
 import type { ProductType } from '@/types/database';
 import { PRODUCT_LABELS } from '@/types/database';
@@ -35,6 +37,7 @@ export function NewLead() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { isOnline, queueAction } = useOfflineSync();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('customer');
   
@@ -127,18 +130,88 @@ export function NewLead() {
       return;
     }
 
+    if (!user) {
+      toast({
+        title: 'Authentication Error',
+        description: 'Please log in to create a lead',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast({
-      title: asDraft ? 'Lead saved as draft' : 'Lead created successfully',
-      description: 'Lead number: NC-L-20260128-00001',
-    });
-    
-    navigate('/leads');
-    setIsSubmitting(false);
+    // Prepare lead data
+    const leadData = {
+      ro_id: user.id,
+      customer_name: formData.customer_name,
+      customer_phone: formData.customer_phone,
+      customer_email: formData.customer_email || null,
+      customer_pan: formData.customer_pan || null,
+      customer_aadhaar: formData.customer_aadhaar || null,
+      gender: formData.gender || null,
+      date_of_birth: formData.date_of_birth || null,
+      co_applicant_name: formData.has_co_applicant ? formData.co_applicant_name || null : null,
+      co_applicant_phone: formData.has_co_applicant ? formData.co_applicant_phone || null : null,
+      co_applicant_pan: formData.has_co_applicant ? formData.co_applicant_pan || null : null,
+      co_applicant_relation: formData.has_co_applicant ? formData.co_applicant_relation || null : null,
+      business_name: formData.business_name || null,
+      business_type: formData.business_type || null,
+      business_address: formData.business_address || null,
+      business_vintage_years: formData.business_vintage_years ? parseInt(formData.business_vintage_years) : null,
+      gst_number: formData.gst_number || null,
+      udyam_number: formData.udyam_number || null,
+      has_property: formData.has_property,
+      property_type: formData.has_property ? formData.property_type || null : null,
+      property_address: formData.has_property ? formData.property_address || null : null,
+      property_value: formData.has_property && formData.property_value ? parseFloat(formData.property_value) : null,
+      product_type: formData.product_type as ProductType,
+      requested_amount: parseFloat(formData.requested_amount),
+      requested_tenure_months: formData.requested_tenure_months ? parseInt(formData.requested_tenure_months) : null,
+      purpose_of_loan: formData.purpose_of_loan || null,
+      capture_latitude: location?.lat || null,
+      capture_longitude: location?.lng || null,
+      capture_address: location?.address || null,
+      status: asDraft ? 'new' : 'submitted',
+      source_channel: 'physical',
+    };
+
+    try {
+      if (isOnline) {
+        // Insert directly to Supabase
+        const { data, error } = await supabase
+          .from('leads')
+          .insert([leadData as never])
+          .select('lead_number')
+          .single();
+
+        if (error) throw error;
+
+        toast({
+          title: asDraft ? 'Lead saved as draft' : 'Lead created successfully',
+          description: `Lead number: ${data?.lead_number || 'Generated'}`,
+        });
+      } else {
+        // Queue for offline sync
+        await queueAction('lead', 'create', leadData);
+        
+        toast({
+          title: 'Lead queued for sync',
+          description: 'Lead will be synced when you are back online',
+        });
+      }
+      
+      navigate('/leads');
+    } catch (error: unknown) {
+      console.error('Error creating lead:', error);
+      toast({
+        title: 'Error creating lead',
+        description: error instanceof Error ? error.message : 'Please try again',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -148,10 +221,16 @@ export function NewLead() {
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
           <ArrowLeft className="w-5 h-5" />
         </Button>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold">New Lead</h1>
           <p className="text-muted-foreground">Capture new customer details</p>
         </div>
+        {!isOnline && (
+          <div className="flex items-center gap-2 text-warning">
+            <WifiOff className="w-4 h-4" />
+            <span className="text-sm">Offline</span>
+          </div>
+        )}
       </div>
 
       {/* Location Bar */}

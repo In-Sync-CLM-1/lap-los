@@ -12,6 +12,7 @@ import { LoginPage } from "@/pages/Login";
 import { RegisterPage } from "@/pages/Register";
 import { Dashboard } from "@/pages/Dashboard";
 import { LeadsList } from "@/pages/LeadsList";
+import { LeadDetail } from "@/pages/LeadDetail";
 import { NewLead } from "@/pages/NewLead";
 import { ApplicationsList } from "@/pages/ApplicationsList";
 import { ApplicationProcessing } from "@/pages/ApplicationProcessing";
@@ -19,6 +20,7 @@ import { Underwriting } from "@/pages/Underwriting";
 import { Approvals } from "@/pages/Approvals";
 import { Analytics } from "@/pages/Analytics";
 import { Disbursal } from "@/pages/Disbursal";
+import { Settings } from "@/pages/Settings";
 import { Unauthorized } from "@/pages/Unauthorized";
 import NotFound from "@/pages/NotFound";
 
@@ -48,7 +50,9 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/leads" element={<LeadsList />} />
               <Route path="/leads/new" element={<NewLead />} />
+              <Route path="/leads/:leadId" element={<LeadDetail />} />
               <Route path="/applications" element={<ApplicationsList />} />
+              <Route path="/settings" element={<Settings />} />
               
               {/* Credit Officer + Management Routes */}
               <Route
