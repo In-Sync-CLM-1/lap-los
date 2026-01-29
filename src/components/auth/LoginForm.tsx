@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, LogIn, Building2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import loginBackground from '@/assets/login-background.jpg';
 
 export function LoginForm() {
   const [email, setEmail] = useState('');
@@ -37,8 +38,16 @@ export function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
-      <Card className="w-full max-w-md shadow-xl border-0 bg-card/95 backdrop-blur">
+    <div 
+      className="min-h-screen flex items-center justify-start p-4 md:p-8 lg:p-16"
+      style={{
+        backgroundImage: `url(${loginBackground})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <Card className="w-full max-w-md shadow-2xl border-0 bg-card/95 backdrop-blur-sm ml-4 md:ml-12 lg:ml-24">
         <CardHeader className="space-y-4 text-center pb-2">
           <div className="mx-auto w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
             <Building2 className="w-8 h-8 text-primary-foreground" />
