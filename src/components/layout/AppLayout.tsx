@@ -34,7 +34,8 @@ import {
   Link2,
   Copy,
   ExternalLink,
-  Check
+  Check,
+  FileBarChart2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ROLE_LABELS } from '@/types/database';
@@ -60,6 +61,7 @@ const navItems: NavItem[] = [
   { label: 'Underwriting', href: '/underwriting', icon: ClipboardList, roles: ['credit_officer', 'sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'], tourId: 'nav-underwriting' },
   { label: 'Approvals', href: '/approvals', icon: UserCheck, roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'], tourId: 'nav-approvals' },
   { label: 'Analytics', href: '/analytics', icon: BarChart3, roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'], tourId: 'nav-analytics' },
+  { label: 'Reports', href: '/reports', icon: FileBarChart2, roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'], tourId: 'nav-reports' },
   { label: 'User Management', href: '/admin/users', icon: UserCog, roles: ['admin'], tourId: 'nav-user-management' },
 ];
 

@@ -20,6 +20,7 @@ import { ApplicationProcessing } from "@/pages/ApplicationProcessing";
 import { Underwriting } from "@/pages/Underwriting";
 import { Approvals } from "@/pages/Approvals";
 import { Analytics } from "@/pages/Analytics";
+import { Reports } from "@/pages/Reports";
 import { Disbursal } from "@/pages/Disbursal";
 import { Settings } from "@/pages/Settings";
 import { UserManagement } from "@/pages/UserManagement";
@@ -99,6 +100,14 @@ const App = () => (
                 element={
                   <ProtectedRoute requiredRoles={['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin']}>
                     <Analytics />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/reports"
+                element={
+                  <ProtectedRoute requiredRoles={['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin']}>
+                    <Reports />
                   </ProtectedRoute>
                 }
               />
