@@ -18,7 +18,8 @@ import {
   XCircle,
   AlertTriangle,
   Loader2,
-  Send
+  Send,
+  Clock
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -28,6 +29,9 @@ import { BREResults } from '@/components/bre/BREResults';
 import { OfferCards } from '@/components/bre/OfferCards';
 import { DocumentUpload, DEFAULT_DOCUMENT_TYPES } from '@/components/documents/DocumentUpload';
 import { APIVerificationPanel } from '@/components/documents/APIVerificationPanel';
+import { WorkflowTimeline } from '@/components/workflow/WorkflowTimeline';
+import { CAMSheet } from '@/components/cam/CAMSheet';
+import { CounterOfferForm } from '@/components/approvals/CounterOfferForm';
 import { runBRE, generateOffers, type FOIRResult, type FOIRInput, type BREResult, type LoanOffer } from '@/lib/bre-engine';
 import type { Tables } from '@/integrations/supabase/types';
 
@@ -323,7 +327,7 @@ export function ApplicationProcessing() {
       
       {/* Tabs */}
       <Tabs defaultValue="customer" className="space-y-4">
-        <TabsList className="grid grid-cols-6 w-full">
+        <TabsList className="grid grid-cols-7 w-full">
           <TabsTrigger value="customer" className="flex items-center gap-1">
             <User className="w-4 h-4" />
             <span className="hidden md:inline">Customer</span>
@@ -347,6 +351,10 @@ export function ApplicationProcessing() {
           <TabsTrigger value="decision" className="flex items-center gap-1">
             <Shield className="w-4 h-4" />
             <span className="hidden md:inline">Decision</span>
+          </TabsTrigger>
+          <TabsTrigger value="history" className="flex items-center gap-1">
+            <Clock className="w-4 h-4" />
+            <span className="hidden md:inline">History</span>
           </TabsTrigger>
         </TabsList>
         
@@ -564,6 +572,22 @@ export function ApplicationProcessing() {
               </Card>
             )}
             
+            {/* CAM Sheet */}
+            <CAMSheet lead={lead} application={application} />
+            
+            {/* Counter Offer (for managers only) */}
+            {application.status === 'deviation' && (hasRole('sales_manager') || hasRole('regional_head') || hasRole('zonal_head') || hasRole('ceo') || hasRole('admin')) && (
+              <div className="flex justify-center">
+                <CounterOfferForm
+                  applicationId={application.id}
+                  currentAmount={lead.requested_amount}
+                  currentTenure={lead.requested_tenure_months || 36}
+                  currentRate={application.offer1_interest_rate ? Number(application.offer1_interest_rate) : 18}
+                  onSuccess={fetchApplicationData}
+                />
+              </div>
+            )}
+            
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Button 
@@ -594,6 +618,11 @@ export function ApplicationProcessing() {
               </Button>
             </div>
           </div>
+        </TabsContent>
+        
+        {/* History Tab */}
+        <TabsContent value="history">
+          <WorkflowTimeline applicationId={application.id} />
         </TabsContent>
       </Tabs>
     </div>

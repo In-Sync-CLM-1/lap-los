@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,11 +22,14 @@ import {
   Phone,
   MapPin,
   Calendar,
-  RefreshCw
+  RefreshCw,
+  ArrowRightCircle,
+  Loader2
 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { Lead, LeadStatus, ProductType } from '@/types/database';
 import { LEAD_STATUS_LABELS, PRODUCT_LABELS } from '@/types/database';
+import { useLeadConversion } from '@/hooks/useLeadConversion';
 
 function getStatusVariant(status: LeadStatus): string {
   switch (status) {
@@ -44,13 +47,16 @@ function getStatusVariant(status: LeadStatus): string {
 }
 
 export function LeadsList() {
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [productFilter, setProductFilter] = useState<string>('all');
+  const { convertToApplication, isConverting } = useLeadConversion();
+  const [convertingLeadId, setConvertingLeadId] = useState<string | null>(null);
 
   // Mock data for demo
   const mockLeads: Lead[] = [
@@ -201,6 +207,22 @@ export function LeadsList() {
     return matchesSearch && matchesStatus && matchesProduct;
   });
 
+  const handleConvertToApplication = async (lead: Lead, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setConvertingLeadId(lead.id);
+    
+    const result = await convertToApplication(lead);
+    
+    if (result.success && result.applicationId) {
+      navigate(`/applications/${result.applicationId}/process`);
+    }
+    
+    setConvertingLeadId(null);
+  };
+
+  const canConvert = hasRole('credit_officer') || hasRole('sales_manager') || hasRole('admin');
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -332,7 +354,25 @@ export function LeadsList() {
                       <p className="text-xs text-muted-foreground">
                         {lead.requested_tenure_months}M tenure
                       </p>
-                      <ChevronRight className="w-5 h-5 text-muted-foreground mt-2 ml-auto" />
+                      <div className="flex items-center gap-2 mt-2 justify-end">
+                        {canConvert && lead.status === 'submitted' && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-1 text-xs"
+                            onClick={(e) => handleConvertToApplication(lead, e)}
+                            disabled={convertingLeadId === lead.id}
+                          >
+                            {convertingLeadId === lead.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              <ArrowRightCircle className="w-3 h-3" />
+                            )}
+                            Process
+                          </Button>
+                        )}
+                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      </div>
                     </div>
                   </div>
                 </CardContent>

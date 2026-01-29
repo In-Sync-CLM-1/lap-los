@@ -31,6 +31,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ROLE_LABELS } from '@/types/database';
+import { NetworkStatus } from './NetworkStatus';
+import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
 
 interface NavItem {
   label: string;
@@ -234,6 +236,12 @@ export function AppLayout() {
         <main className="p-4 lg:p-6 safe-area-inset">
           <Outlet />
         </main>
+        
+        {/* Network Status Indicator */}
+        <NetworkStatus />
+        
+        {/* PWA Install Banner */}
+        <PWAInstallBanner />
       </div>
     </div>
   );
