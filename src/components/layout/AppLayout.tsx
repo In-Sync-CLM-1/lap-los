@@ -27,7 +27,8 @@ import {
   ChevronRight,
   ClipboardList,
   UserCheck,
-  TrendingUp
+  TrendingUp,
+  UserCog
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ROLE_LABELS } from '@/types/database';
@@ -48,6 +49,7 @@ const navItems: NavItem[] = [
   { label: 'Underwriting', href: '/underwriting', icon: ClipboardList, roles: ['credit_officer', 'sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'] },
   { label: 'Approvals', href: '/approvals', icon: UserCheck, roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'] },
   { label: 'Analytics', href: '/analytics', icon: BarChart3, roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'] },
+  { label: 'User Management', href: '/admin/users', icon: UserCog, roles: ['admin'] },
 ];
 
 export function AppLayout() {
