@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, LogIn, Building2 } from 'lucide-react';
+import { Loader2, LogIn } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import loginBackground from '@/assets/login-background.jpg';
 
@@ -48,16 +48,10 @@ export function LoginForm() {
       }}
     >
       <Card className="w-full max-w-md shadow-2xl border-0 bg-card/95 backdrop-blur-sm ml-4 md:ml-12 lg:ml-24">
-        <CardHeader className="space-y-4 text-center pb-2">
-          <div className="mx-auto w-16 h-16 rounded-2xl gradient-primary flex items-center justify-center shadow-lg">
-            <Building2 className="w-8 h-8 text-primary-foreground" />
-          </div>
-          <div>
-            <CardTitle className="text-2xl font-bold">Niyara Capital</CardTitle>
-            <CardDescription className="text-base mt-1">
-              Loan Origination System
-            </CardDescription>
-          </div>
+        <CardHeader className="text-center pb-2">
+          <CardTitle className="text-3xl font-extrabold tracking-tight">
+            Loan Origination System
+          </CardTitle>
         </CardHeader>
         
         <form onSubmit={handleSubmit}>
