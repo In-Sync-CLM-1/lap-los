@@ -16,7 +16,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { 
-  Building2, 
   LayoutDashboard, 
   Users, 
   FileText, 
@@ -29,7 +28,6 @@ import {
   ChevronRight,
   ClipboardList,
   UserCheck,
-  TrendingUp,
   UserCog,
   Link2,
   Copy,
@@ -45,6 +43,7 @@ import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import { generateReferralUrl } from '@/lib/referral-utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import niyaraLogo from '@/assets/niyara-logo.png';
 
 interface NavItem {
   label: string;
@@ -154,14 +153,12 @@ export function AppLayout() {
       {/* Desktop Sidebar */}
       <aside className="fixed left-0 top-0 z-40 hidden lg:flex h-screen w-64 flex-col gradient-sidebar border-r border-sidebar-border">
         {/* Logo */}
-        <div className="flex items-center gap-3 px-4 py-5 border-b border-sidebar-border">
-          <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center shadow-md">
-            <Building2 className="w-5 h-5 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="font-bold text-sidebar-foreground">Niyara Capital</h1>
-            <p className="text-xs text-sidebar-foreground/60">LOS Platform</p>
-          </div>
+        <div className="flex items-center justify-center px-4 py-5 border-b border-sidebar-border">
+          <img 
+            src={niyaraLogo} 
+            alt="Niyara Capital" 
+            className="h-12 object-contain"
+          />
         </div>
         
         {/* Navigation */}
@@ -254,14 +251,12 @@ export function AppLayout() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-64 p-0 gradient-sidebar border-sidebar-border">
-                <div className="flex items-center gap-3 px-4 py-5 border-b border-sidebar-border">
-                  <div className="w-10 h-10 rounded-xl gradient-primary flex items-center justify-center">
-                    <Building2 className="w-5 h-5 text-primary-foreground" />
-                  </div>
-                  <div>
-                    <h1 className="font-bold text-sidebar-foreground">Niyara Capital</h1>
-                    <p className="text-xs text-sidebar-foreground/60">LOS Platform</p>
-                  </div>
+                <div className="flex items-center justify-center px-4 py-5 border-b border-sidebar-border">
+                  <img 
+                    src={niyaraLogo} 
+                    alt="Niyara Capital" 
+                    className="h-12 object-contain"
+                  />
                 </div>
                 <div className="py-4">
                   <NavContent />
