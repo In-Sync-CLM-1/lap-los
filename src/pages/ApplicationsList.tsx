@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -14,47 +15,28 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { 
-  Plus, 
   Search, 
   ChevronRight,
   Calendar,
-  RefreshCw,
-  FileText
+  FileText,
+  RefreshCw
 } from 'lucide-react';
 import { format } from 'date-fns';
 import type { ApplicationStatus, ProductType } from '@/types/database';
 import { APPLICATION_STATUS_LABELS, PRODUCT_LABELS } from '@/types/database';
 
-// Mock data
-const mockApplications = [
-  {
-    id: '1',
-    application_number: 'NC-A-20260128-00001',
-    customer_name: 'Rajesh Kumar',
-    product_type: 'business_loan' as ProductType,
-    final_amount: 500000,
-    status: 'underwriting' as ApplicationStatus,
-    created_at: new Date().toISOString(),
-  },
-  {
-    id: '2',
-    application_number: 'NC-A-20260127-00005',
-    customer_name: 'Priya Sharma',
-    product_type: 'personal_loan' as ProductType,
-    final_amount: 200000,
-    status: 'approved' as ApplicationStatus,
-    created_at: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: '3',
-    application_number: 'NC-A-20260126-00012',
-    customer_name: 'Amit Patel',
-    product_type: 'stpl' as ProductType,
-    final_amount: 100000,
-    status: 'disbursed' as ApplicationStatus,
-    created_at: new Date(Date.now() - 172800000).toISOString(),
-  },
-];
+interface ApplicationWithLead {
+  id: string;
+  application_number: string;
+  status: ApplicationStatus;
+  final_amount: number | null;
+  created_at: string;
+  leads: {
+    customer_name: string;
+    product_type: ProductType;
+    requested_amount: number;
+  };
+}
 
 function getStatusColor(status: ApplicationStatus): string {
   switch (status) {
@@ -70,17 +52,51 @@ function getStatusColor(status: ApplicationStatus): string {
 export function ApplicationsList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [isLoading, setIsLoading] = useState(false);
 
-  const filteredApplications = mockApplications.filter(app => {
+  // Fetch applications with leads
+  const { data: applications = [], isLoading, refetch, isRefetching } = useQuery({
+    queryKey: ['applications-list', statusFilter],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('applications')
+        .select(`
+          id,
+          application_number,
+          status,
+          final_amount,
+          created_at,
+          leads!inner(
+            customer_name,
+            product_type,
+            requested_amount
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      let result = (data || []) as unknown as ApplicationWithLead[];
+      if (statusFilter !== 'all') {
+        result = result.filter(a => a.status === statusFilter);
+      }
+      return result;
+    },
+  });
+
+  const filteredApplications = applications.filter(app => {
     const matchesSearch = 
-      app.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.leads.customer_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.application_number.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
-    
-    return matchesSearch && matchesStatus;
+    return matchesSearch;
   });
+
+  const getActionLink = (app: ApplicationWithLead) => {
+    if (app.status === 'approved' || app.status === 'disbursed') {
+      return `/applications/${app.id}/disbursal`;
+    }
+    return `/applications/${app.id}/process`;
+  };
 
   return (
     <div className="space-y-6">
@@ -90,6 +106,14 @@ export function ApplicationsList() {
           <h1 className="text-2xl font-bold">Applications</h1>
           <p className="text-muted-foreground">Track all loan applications</p>
         </div>
+        <Button 
+          variant="outline" 
+          size="icon"
+          onClick={() => refetch()}
+          disabled={isRefetching}
+        >
+          <RefreshCw className={`w-4 h-4 ${isRefetching ? 'animate-spin' : ''}`} />
+        </Button>
       </div>
 
       {/* Filters */}
@@ -141,39 +165,43 @@ export function ApplicationsList() {
               </div>
               <h3 className="font-medium mb-1">No applications found</h3>
               <p className="text-sm text-muted-foreground">
-                Try adjusting your filters
+                {searchTerm || statusFilter !== 'all'
+                  ? 'Try adjusting your filters'
+                  : 'No applications have been created yet'}
               </p>
             </CardContent>
           </Card>
         ) : (
           filteredApplications.map((app) => (
-            <Card key={app.id} className="card-hover cursor-pointer">
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold truncate">{app.customer_name}</h3>
-                      <Badge variant="outline" className={`${getStatusColor(app.status)} border`}>
-                        {APPLICATION_STATUS_LABELS[app.status]}
-                      </Badge>
+            <Link key={app.id} to={getActionLink(app)}>
+              <Card className="card-hover cursor-pointer">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold truncate">{app.leads.customer_name}</h3>
+                        <Badge variant="outline" className={`${getStatusColor(app.status)} border`}>
+                          {APPLICATION_STATUS_LABELS[app.status]}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {app.application_number} • {PRODUCT_LABELS[app.leads.product_type]}
+                      </p>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {format(new Date(app.created_at), 'dd MMM yyyy')}
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      {app.application_number} • {PRODUCT_LABELS[app.product_type]}
-                    </p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {format(new Date(app.created_at), 'dd MMM yyyy')}
+                    <div className="text-right flex-shrink-0">
+                      <p className="font-bold text-lg">
+                        ₹{((app.final_amount || app.leads.requested_amount) / 100000).toFixed(1)}L
+                      </p>
+                      <ChevronRight className="w-5 h-5 text-muted-foreground mt-2 ml-auto" />
                     </div>
                   </div>
-                  <div className="text-right flex-shrink-0">
-                    <p className="font-bold text-lg">
-                      ₹{(app.final_amount / 100000).toFixed(1)}L
-                    </p>
-                    <ChevronRight className="w-5 h-5 text-muted-foreground mt-2 ml-auto" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))
         )}
       </div>
