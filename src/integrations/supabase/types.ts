@@ -621,6 +621,8 @@ export type Database = {
           full_name: string
           id: string
           is_active: boolean | null
+          onboarding_completed: boolean | null
+          onboarding_completed_at: string | null
           phone: string | null
           region: string | null
           updated_at: string
@@ -637,6 +639,8 @@ export type Database = {
           full_name: string
           id?: string
           is_active?: boolean | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
           phone?: string | null
           region?: string | null
           updated_at?: string
@@ -653,6 +657,8 @@ export type Database = {
           full_name?: string
           id?: string
           is_active?: boolean | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
           phone?: string | null
           region?: string | null
           updated_at?: string
