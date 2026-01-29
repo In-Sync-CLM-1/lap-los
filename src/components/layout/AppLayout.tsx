@@ -34,22 +34,24 @@ import { cn } from '@/lib/utils';
 import { ROLE_LABELS } from '@/types/database';
 import { NetworkStatus } from './NetworkStatus';
 import { PWAInstallBanner } from '@/components/pwa/PWAInstallBanner';
+import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 
 interface NavItem {
   label: string;
   href: string;
   icon: React.ElementType;
   roles?: string[];
+  tourId?: string;
 }
 
 const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Leads', href: '/leads', icon: Users },
-  { label: 'Applications', href: '/applications', icon: FileText },
-  { label: 'Underwriting', href: '/underwriting', icon: ClipboardList, roles: ['credit_officer', 'sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'] },
-  { label: 'Approvals', href: '/approvals', icon: UserCheck, roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'] },
-  { label: 'Analytics', href: '/analytics', icon: BarChart3, roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'] },
-  { label: 'User Management', href: '/admin/users', icon: UserCog, roles: ['admin'] },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, tourId: 'nav-dashboard' },
+  { label: 'Leads', href: '/leads', icon: Users, tourId: 'nav-leads' },
+  { label: 'Applications', href: '/applications', icon: FileText, tourId: 'nav-applications' },
+  { label: 'Underwriting', href: '/underwriting', icon: ClipboardList, roles: ['credit_officer', 'sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'], tourId: 'nav-underwriting' },
+  { label: 'Approvals', href: '/approvals', icon: UserCheck, roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'], tourId: 'nav-approvals' },
+  { label: 'Analytics', href: '/analytics', icon: BarChart3, roles: ['sales_manager', 'regional_head', 'zonal_head', 'ceo', 'admin'], tourId: 'nav-analytics' },
+  { label: 'User Management', href: '/admin/users', icon: UserCog, roles: ['admin'], tourId: 'nav-user-management' },
 ];
 
 export function AppLayout() {
@@ -88,6 +90,7 @@ export function AppLayout() {
             key={item.href}
             to={item.href}
             onClick={() => setIsSidebarOpen(false)}
+            data-tour={item.tourId}
             className={cn(
               'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all touch-target',
               isActive 
@@ -183,6 +186,7 @@ export function AppLayout() {
                 size="sm" 
                 className="gap-2"
                 onClick={() => navigate('/leads/new')}
+                data-tour="new-lead-button"
               >
                 <Plus className="w-4 h-4" />
                 <span className="hidden sm:inline">New Lead</span>
@@ -197,7 +201,7 @@ export function AppLayout() {
               {/* User Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="gap-2 px-2">
+                  <Button variant="ghost" className="gap-2 px-2" data-tour="user-menu">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={profile?.avatar_url || undefined} />
                       <AvatarFallback className="text-xs">
@@ -244,6 +248,9 @@ export function AppLayout() {
         
         {/* PWA Install Banner */}
         <PWAInstallBanner />
+        
+        {/* Onboarding Tour */}
+        <OnboardingTour />
       </div>
     </div>
   );

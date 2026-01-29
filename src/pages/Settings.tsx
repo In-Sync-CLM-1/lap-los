@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useOnboarding } from '@/contexts/OnboardingContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Database, User, Shield } from 'lucide-react';
+import { Loader2, Database, User, Shield, RotateCcw, Sparkles } from 'lucide-react';
 import { ROLE_LABELS } from '@/types/database';
 
 export function Settings() {
   const { profile, primaryRole, isManager } = useAuth();
+  const { restartTour } = useOnboarding();
   const { toast } = useToast();
   const [isSeeding, setIsSeeding] = useState(false);
 
@@ -40,6 +42,20 @@ export function Settings() {
         <CardContent className="space-y-4">
           <div className="flex justify-between"><span className="text-muted-foreground">Name</span><span className="font-medium">{profile?.full_name}</span></div>
           <div className="flex justify-between"><span className="text-muted-foreground">Role</span><Badge>{primaryRole ? ROLE_LABELS[primaryRole] : 'No role'}</Badge></div>
+        </CardContent>
+      </Card>
+
+      {/* Onboarding Tour */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5" />Onboarding Tour</CardTitle>
+          <CardDescription>Take a guided tour of the platform features</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={restartTour} variant="outline" className="gap-2">
+            <RotateCcw className="w-4 h-4" />
+            Restart Onboarding Tour
+          </Button>
         </CardContent>
       </Card>
 
