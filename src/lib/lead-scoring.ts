@@ -1,4 +1,4 @@
-// Lead Scoring Engine for Niyara LOS
+// Lead Scoring Engine for Loan-Sync LOS
 
 export type LeadTemperature = 'hot' | 'warm' | 'cold';
 export type QualificationStatus = 'raw' | 'scored' | 'qualified' | 'los_ready';

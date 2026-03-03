@@ -1,7 +1,7 @@
 {
-  "name": "Niyara Capital LOS",
-  "short_name": "NC LOS",
-  "description": "Loan Origination System for Niyara Capital",
+  "name": "Loan-Sync LOS",
+  "short_name": "LS LOS",
+  "description": "Loan Origination System by Loan-Sync",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0F172A",

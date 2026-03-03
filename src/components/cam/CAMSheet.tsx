@@ -156,7 +156,7 @@ export function CAMSheet({ lead, application }: CAMSheetProps) {
         <div ref={printRef} className="text-sm">
           {/* Header */}
           <div className="header text-center mb-6 pb-4 border-b-2 border-foreground">
-            <h1 className="text-lg font-bold mb-1">NIYARA CAPITAL PRIVATE LIMITED</h1>
+            <h1 className="text-lg font-bold mb-1">LOAN-SYNC PRIVATE LIMITED</h1>
             <p className="text-muted-foreground text-xs">Credit Appraisal Memorandum</p>
             <p className="text-xs mt-2">Application No: <strong>{application.application_number}</strong></p>
             <p className="text-xs">Date: {format(new Date(), 'dd MMM yyyy')}</p>

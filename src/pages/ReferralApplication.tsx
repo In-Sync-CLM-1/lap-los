@@ -156,7 +156,7 @@ export function ReferralApplication() {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Building2 className="w-8 h-8 text-primary" />
-            <h1 className="text-2xl font-bold">Niyara Capital</h1>
+            <h1 className="text-2xl font-bold">Loan-Sync</h1>
           </div>
           <p className="text-lg font-medium">Apply for a Loan</p>
           <p className="text-sm text-muted-foreground mt-1">

@@ -62,7 +62,7 @@ export function ReferralQRCard({ referralCode, userName }: ReferralQRCardProps) 
       ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
       
       const link = document.createElement('a');
-      link.download = `niyara-referral-${referralCode}.png`;
+      link.download = `loan-sync-referral-${referralCode}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     };
@@ -72,7 +72,7 @@ export function ReferralQRCard({ referralCode, userName }: ReferralQRCardProps) 
 
   const handleShareWhatsApp = () => {
     const message = encodeURIComponent(
-      `Apply for a loan with Niyara Capital! Use my referral link: ${referralUrl}`
+      `Apply for a loan with Loan-Sync! Use my referral link: ${referralUrl}`
     );
     window.open(`https://wa.me/?text=${message}`, '_blank');
   };

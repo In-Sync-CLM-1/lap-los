@@ -79,7 +79,7 @@ export function RegisterForm() {
           <div>
             <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
             <CardDescription className="text-base mt-1">
-              Join Niyara Capital LOS
+              Join Loan-Sync LOS
             </CardDescription>
           </div>
         </CardHeader>

@@ -46,82 +46,82 @@ const TEMPLATES: Record<NotificationEvent, NotificationTemplate> = {
   lead_created: {
     subject: 'New Lead Created - {{lead_number}}',
     body: 'A new lead has been created for {{customer_name}}. Lead Number: {{lead_number}}.',
-    smsText: 'Niyara: New lead {{lead_number}} created for {{customer_name}}.',
+    smsText: 'Loan-Sync: New lead {{lead_number}} created for {{customer_name}}.',
   },
   lead_documents_pending: {
     subject: 'Documents Required - {{lead_number}}',
     body: 'Please upload the required documents for lead {{lead_number}}.',
-    smsText: 'Niyara: Docs pending for lead {{lead_number}}. Please upload.',
+    smsText: 'Loan-Sync: Docs pending for lead {{lead_number}}. Please upload.',
   },
   lead_submitted: {
     subject: 'Lead Submitted for Processing - {{lead_number}}',
     body: 'Lead {{lead_number}} has been submitted for processing.',
-    smsText: 'Niyara: Lead {{lead_number}} submitted for processing.',
+    smsText: 'Loan-Sync: Lead {{lead_number}} submitted for processing.',
   },
   application_created: {
     subject: 'Application Created - {{application_number}}',
     body: 'Application {{application_number}} has been created from lead {{lead_number}}.',
-    smsText: 'Niyara: Application {{application_number}} created.',
+    smsText: 'Loan-Sync: Application {{application_number}} created.',
   },
   application_bre_complete: {
     subject: 'BRE Processing Complete - {{application_number}}',
     body: 'Business Rule Engine has processed application {{application_number}}. Decision: {{decision}}.',
-    smsText: 'Niyara: BRE complete for {{application_number}}. Decision: {{decision}}.',
+    smsText: 'Loan-Sync: BRE complete for {{application_number}}. Decision: {{decision}}.',
   },
   application_assigned: {
     subject: 'Application Assigned - {{application_number}}',
     body: 'You have been assigned to underwrite application {{application_number}}.',
-    smsText: 'Niyara: App {{application_number}} assigned to you for underwriting.',
+    smsText: 'Loan-Sync: App {{application_number}} assigned to you for underwriting.',
   },
   application_deviation_required: {
     subject: 'Deviation Approval Required - {{application_number}}',
     body: 'Application {{application_number}} requires deviation approval. Reason: {{deviation_reason}}.',
-    smsText: 'Niyara: Deviation approval needed for {{application_number}}.',
+    smsText: 'Loan-Sync: Deviation approval needed for {{application_number}}.',
   },
   application_approved: {
     subject: 'Congratulations! Loan Approved - {{application_number}}',
     body: 'Your loan application {{application_number}} has been approved for {{approved_amount}}.',
-    smsText: 'Niyara: Congrats! Loan {{application_number}} approved for Rs.{{approved_amount}}.',
+    smsText: 'Loan-Sync: Congrats! Loan {{application_number}} approved for Rs.{{approved_amount}}.',
   },
   application_rejected: {
     subject: 'Application Update - {{application_number}}',
     body: 'We regret to inform you that application {{application_number}} could not be approved. Reason: {{rejection_reason}}.',
-    smsText: 'Niyara: App {{application_number}} could not be approved. Contact us for details.',
+    smsText: 'Loan-Sync: App {{application_number}} could not be approved. Contact us for details.',
   },
   application_disbursed: {
     subject: 'Loan Disbursed - {{application_number}}',
     body: 'Loan {{application_number}} has been disbursed. Amount: {{disbursed_amount}}.',
-    smsText: 'Niyara: Rs.{{disbursed_amount}} disbursed for loan {{application_number}}.',
+    smsText: 'Loan-Sync: Rs.{{disbursed_amount}} disbursed for loan {{application_number}}.',
   },
   deviation_submitted: {
     subject: 'Deviation Request Submitted - {{application_number}}',
     body: 'A deviation request has been submitted for {{application_number}}. Type: {{deviation_type}}.',
-    smsText: 'Niyara: Deviation request submitted for {{application_number}}.',
+    smsText: 'Loan-Sync: Deviation request submitted for {{application_number}}.',
   },
   deviation_approved: {
     subject: 'Deviation Approved - {{application_number}}',
     body: 'The deviation for application {{application_number}} has been approved.',
-    smsText: 'Niyara: Deviation approved for {{application_number}}.',
+    smsText: 'Loan-Sync: Deviation approved for {{application_number}}.',
   },
   deviation_rejected: {
     subject: 'Deviation Rejected - {{application_number}}',
     body: 'The deviation for application {{application_number}} has been rejected.',
-    smsText: 'Niyara: Deviation rejected for {{application_number}}.',
+    smsText: 'Loan-Sync: Deviation rejected for {{application_number}}.',
   },
   counter_offer_submitted: {
     subject: 'Counter Offer Available - {{application_number}}',
     body: 'A counter offer has been provided for {{application_number}}. New amount: {{counter_amount}}.',
-    smsText: 'Niyara: Counter offer of Rs.{{counter_amount}} for {{application_number}}.',
+    smsText: 'Loan-Sync: Counter offer of Rs.{{counter_amount}} for {{application_number}}.',
   },
   document_verified: {
     subject: 'Document Verified - {{document_type}}',
     body: 'Your {{document_type}} has been verified for application {{application_number}}.',
-    smsText: 'Niyara: {{document_type}} verified for {{application_number}}.',
+    smsText: 'Loan-Sync: {{document_type}} verified for {{application_number}}.',
   },
   sanction_letter_generated: {
     subject: 'Sanction Letter Ready - {{application_number}}',
     body: 'Your sanction letter for application {{application_number}} is ready for download.',
-    smsText: 'Niyara: Sanction letter ready for {{application_number}}. Check app.',
+    smsText: 'Loan-Sync: Sanction letter ready for {{application_number}}. Check app.',
   },
 };
 

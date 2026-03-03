@@ -1,6 +1,6 @@
-# Niyara Capital LOS
+# Loan-Sync LOS
 
-Loan Origination System for Niyara Capital.
+Loan Origination System by Loan-Sync.
 
 ## Tech Stack
 

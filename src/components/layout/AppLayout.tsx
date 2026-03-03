@@ -43,7 +43,7 @@ import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import { generateReferralUrl } from '@/lib/referral-utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import niyaraLogo from '@/assets/niyara-logo.png';
+import loanSyncLogo from '@/assets/loan-sync-logo.png';
 
 interface NavItem {
   label: string;
@@ -155,8 +155,8 @@ export function AppLayout() {
         {/* Logo */}
         <div className="flex items-center justify-center px-4 py-5 border-b border-sidebar-border">
           <img 
-            src={niyaraLogo} 
-            alt="Niyara Capital" 
+            src={loanSyncLogo} 
+            alt="Loan-Sync" 
             className="h-12 object-contain"
           />
         </div>
@@ -253,8 +253,8 @@ export function AppLayout() {
               <SheetContent side="left" className="w-64 p-0 gradient-sidebar border-sidebar-border">
                 <div className="flex items-center justify-center px-4 py-5 border-b border-sidebar-border">
                   <img 
-                    src={niyaraLogo} 
-                    alt="Niyara Capital" 
+                    src={loanSyncLogo} 
+                    alt="Loan-Sync" 
                     className="h-12 object-contain"
                   />
                 </div>

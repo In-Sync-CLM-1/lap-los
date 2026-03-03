@@ -30,7 +30,7 @@ export function WelcomeModal() {
             <Sparkles className="w-8 h-8 text-primary" />
           </div>
           <DialogTitle className="text-2xl">
-            Welcome to Niyara Capital, {firstName}!
+            Welcome to Loan-Sync, {firstName}!
           </DialogTitle>
           <DialogDescription className="text-base pt-2">
             You're logged in as{' '}
